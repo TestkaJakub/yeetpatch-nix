@@ -4,9 +4,12 @@
   fetchurl,
   makeWrapper,
   bash,
+  coreutils,
   jq,
   curl,
   desync,
+  p7zip,
+  xxHash,
 }:
 
 # YeetPatch: fetches the upstream tarball and provides
@@ -17,7 +20,10 @@
 # Patches (each fails the build if upstream changes the line, so nothing
 # silently stops working):
 #   - desync is taken from nixpkgs instead of expected next to the script
-#   - INSTALL_DIR can be set from the environment, defaulting to ~/Games/VotV
+#   - every config value can be set from the environment
+#   - INSTALL_DIR defaults to ~/Games/VotV
+#   - BACKUPS_DIR moves out of the (read-only) script folder into
+#     $XDG_DATA_HOME/yeetpatch/backups
 stdenvNoCC.mkDerivation {
   pname   = "yeetpatch";
   version = "latest4";
@@ -53,15 +59,32 @@ stdenvNoCC.mkDerivation {
     # Patched script
     mkdir -p $out/libexec/yeetpatch
     substitute YeetPatch.sh $out/libexec/yeetpatch/YeetPatch.sh \
-      --replace-fail 'DESYNC_BIN="$SCRIPT_DIR/desync"' 'DESYNC_BIN="$(command -v desync)"' \
-      --replace-fail 'if [[ -x "$DESYNC_BIN" ]]; then' 'if [[ -n "$DESYNC_BIN" ]]; then' \
-      --replace-fail 'INSTALL_DIR=""' 'INSTALL_DIR="''${INSTALL_DIR:-$HOME/Games/VotV}"'
+      --replace-fail 'DESYNC_BIN="$SCRIPT_DIR/desync"' \
+                     'DESYNC_BIN="$(command -v desync)"' \
+      --replace-fail 'if [[ -x "$DESYNC_BIN" ]]; then' \
+                     'if [[ -n "$DESYNC_BIN" ]]; then' \
+      --replace-fail 'MANIFEST_URL="https://votv.dev/patcher_assets/patch_manifest.json"' \
+                     'MANIFEST_URL="''${MANIFEST_URL:-https://votv.dev/patcher_assets/patch_manifest.json}"' \
+      --replace-fail 'EXE_PATH=""' \
+                     'EXE_PATH="''${EXE_PATH:-}"' \
+      --replace-fail 'INSTALL_DIR=""' \
+                     'INSTALL_DIR="''${INSTALL_DIR:-$HOME/Games/VotV}"' \
+      --replace-fail 'CACHE_DIR=""' \
+                     'CACHE_DIR="''${CACHE_DIR:-}"' \
+      --replace-fail 'STORE_URL="https://votv.dev/patcher_assets/256-1024-4096-store"' \
+                     'STORE_URL="''${STORE_URL:-https://votv.dev/patcher_assets/256-1024-4096-store}"' \
+      --replace-fail 'SAVEGAME_DIR=""' \
+                     'SAVEGAME_DIR="''${SAVEGAME_DIR:-}"' \
+      --replace-fail 'INSTALL_CATALOG_URL="https://votv.dev/patcher_assets/index_manifest.json"' \
+                     'INSTALL_CATALOG_URL="''${INSTALL_CATALOG_URL:-https://votv.dev/patcher_assets/index_manifest.json}"' \
+      --replace-fail 'BACKUPS_DIR="$SCRIPT_DIR/backups"' \
+                     'BACKUPS_DIR="''${BACKUPS_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/yeetpatch/backups}"'
 
-    # Command: runs the script through Nix's bash (no reliance on its shebang)
-    # with its tools first on PATH
+    # Command: runs the script through Nix's bash with every tool it checks
+    # for first on PATH (7z, jq, xxhsum, sha256sum, curl, desync)
     makeWrapper ${bash}/bin/bash $out/bin/yeetpatch \
       --add-flags $out/libexec/yeetpatch/YeetPatch.sh \
-      --prefix PATH : ${lib.makeBinPath [ desync jq curl ]}
+      --prefix PATH : ${lib.makeBinPath [ desync jq curl p7zip xxHash coreutils ]}
 
     runHook postInstall
   '';
