@@ -1,5 +1,5 @@
 {
-  description = "yeetpatch — Voices of the Void patcher, unpacked as shipped";
+  description = "yeetpatch — Voices of the Void patcher, ready to run on Nix";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
@@ -19,6 +19,11 @@
         yeetpatch = final.callPackage ./package.nix { };
       };
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
+      nixosModules = rec {
+        yeetpatch = import ./module.nix self;
+        default   = yeetpatch;
+      };
+
+      formatter = forAllSystems (pkgs: pkgs.nixfmt);
     };
 }
