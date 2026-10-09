@@ -11,7 +11,15 @@ stdenvNoCC.mkDerivation {
     sha256 = "sha256-zlvwkHlixxudPagUDYnbBP/R4fFZbBE+lmS5Vngvjcs=";
   };
 
-  sourceRoot = ".";   # tarball has no top-level directory
+  # The tarball has no top-level directory, so unpack into our own folder
+  # (unpacking into "." would also pick up the builder's env-vars file)
+  unpackPhase = ''
+    runHook preUnpack
+    mkdir source
+    tar -xf $src -C source
+    runHook postUnpack
+  '';
+  sourceRoot = "source";
 
   dontConfigure = true;
   dontBuild     = true;
