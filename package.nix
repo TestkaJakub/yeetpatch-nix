@@ -24,6 +24,8 @@
 #   - INSTALL_DIR defaults to ~/Games/VotV
 #   - BACKUPS_DIR moves out of the (read-only) script folder into
 #     $XDG_DATA_HOME/yeetpatch/backups
+#   - help text says `yeetpatch` instead of the store path and drops the
+#     "edit the script" / "desync next to the script" notes
 stdenvNoCC.mkDerivation {
   pname   = "yeetpatch";
   version = "latest4";
@@ -78,7 +80,20 @@ stdenvNoCC.mkDerivation {
       --replace-fail 'INSTALL_CATALOG_URL="https://votv.dev/patcher_assets/index_manifest.json"' \
                      'INSTALL_CATALOG_URL="''${INSTALL_CATALOG_URL:-https://votv.dev/patcher_assets/index_manifest.json}"' \
       --replace-fail 'BACKUPS_DIR="$SCRIPT_DIR/backups"' \
-                     'BACKUPS_DIR="''${BACKUPS_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/yeetpatch/backups}"'
+                     'BACKUPS_DIR="''${BACKUPS_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/yeetpatch/backups}"' \
+      \
+      --replace-fail '$0 update' \
+                     'yeetpatch update' \
+      --replace-fail '$0 install' \
+                     'yeetpatch install' \
+      --replace-fail '(or set EXE_PATH in the script)' \
+                     '(or set EXE_PATH)' \
+      --replace-fail 'Config (edit at top of script):' \
+                     'Config (environment variables; on NixOS also programs.yeetpatch.*):' \
+      --replace-fail 'Where to fetch desync if missing (local ./desync used)' \
+                     'Unused here: desync is provided by Nix' \
+      --replace-fail 'desync binary is placed next to this script if not present.' \
+                     'desync, 7z, jq, xxhsum and curl are provided by Nix.'
 
     # Command: runs the script through Nix's bash with every tool it checks
     # for first on PATH (7z, jq, xxhsum, sha256sum, curl, desync)
