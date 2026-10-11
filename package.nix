@@ -28,7 +28,7 @@
 #     "edit the script" / "desync next to the script" notes
 stdenvNoCC.mkDerivation {
   pname   = "yeetpatch";
-  version = "latest4";
+  version = "1.0.0";
 
   src = fetchurl {
     url    = "https://votv.dev/patcher_assets/download/YeetPatch-latest-linux.tar";
