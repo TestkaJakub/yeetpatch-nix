@@ -9,7 +9,7 @@
   curl,
   desync,
   p7zip,
-  xxHash,
+  xxhash,
 }:
 
 # YeetPatch: fetches the upstream tarball and provides
@@ -99,7 +99,7 @@ stdenvNoCC.mkDerivation {
     # for first on PATH (7z, jq, xxhsum, sha256sum, curl, desync)
     makeWrapper ${bash}/bin/bash $out/bin/yeetpatch \
       --add-flags $out/libexec/yeetpatch/YeetPatch.sh \
-      --prefix PATH : ${lib.makeBinPath [ desync jq curl p7zip xxHash coreutils ]}
+      --prefix PATH : ${lib.makeBinPath [ desync jq curl p7zip xxhash coreutils ]}
 
     runHook postInstall
   '';

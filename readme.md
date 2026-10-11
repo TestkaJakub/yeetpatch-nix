@@ -24,7 +24,7 @@ nix run github:TestkaJakub/yeetpatch-nix -- update ~/Games/VotV/VotV.exe
 Install to your profile:
 
 ```sh
-nix profile install github:TestkaJakub/yeetpatch-nix
+nix profile add github:TestkaJakub/yeetpatch-nix
 ```
 
 ### NixOS
@@ -134,9 +134,10 @@ Tags follow `v<version>-nixos-<release>`:
 
 | Tag                  | NixOS |
 | -------------------- | ----- |
+| `v1.0.0-nixos-26.05` | 26.05 |
 | `v1.0.0-nixos-25.11` | 25.11 |
 
-The default branch always targets the current NixOS release. To pin a version, use a tag as the flake ref:
+The default branch always targets the current NixOS release. To pin a version, or to stay on an older release, use a tag as the flake ref:
 
 ```nix
 inputs.yeetpatch.url = "github:TestkaJakub/yeetpatch-nix/v1.0.0-nixos-25.11";
@@ -148,7 +149,7 @@ The upstream URL always points at the latest release, so the build fails with a 
 
 1. replace `sha256` in `package.nix` with the hash Nix reports,
 2. bump the patch version (e.g. `1.0.0` → `1.0.1`) in `package.nix` and in this README's title,
-3. commit and tag it, e.g. `v1.0.1-nixos-25.11`.
+3. commit and tag it, e.g. `v1.0.1-nixos-26.05`.
 
 ## Contributing
 

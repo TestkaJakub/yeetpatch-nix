@@ -1,7 +1,7 @@
 {
   description = "yeetpatch — Voices of the Void patcher, ready to run on Nix";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
   outputs = { self, nixpkgs }:
     let
